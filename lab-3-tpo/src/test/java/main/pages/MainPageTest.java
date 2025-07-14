@@ -4,12 +4,17 @@ package main.pages;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Duration;
+import java.util.stream.Stream;
 
 
 public class MainPageTest {
@@ -17,9 +22,9 @@ public class MainPageTest {
     private MainPage mainPage;
     private WebDriver driver;
 
-    @BeforeEach
-    public void initialization() {
-        driver = new ChromeDriver();
+//    @BeforeEach
+    public void initialization(WebDriver webDriver) {
+        driver = webDriver;
         driver.manage().window().maximize();
         driver.manage().deleteAllCookies();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
@@ -27,50 +32,73 @@ public class MainPageTest {
         mainPage = new MainPage(driver, wait);
     }
 
-    @Test
-    public void testLogin() {
+    static Stream<Arguments> browserProvider() {
+        return Stream.of(
+                Arguments.of(new ChromeDriver()),
+                Arguments.of(new FirefoxDriver())
+        );
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("browserProvider")
+    public void testLogin(WebDriver webDriver) {
+        initialization(webDriver);
         mainPage.open();
         mainPage.login();
         assertTrue(mainPage.checkInvitationLogin());
     }
 
-    @Test
-    public void searchPhone () {
+
+    @ParameterizedTest
+    @MethodSource("browserProvider")
+    public void searchPhone (WebDriver webDriver) {
+        initialization(webDriver);
         mainPage.open();
         mainPage.clickSearch();
         assertTrue(mainPage.searchRealme());
     }
 
-    @Test
-    void openFavorites() {
+    @ParameterizedTest
+    @MethodSource("browserProvider")
+    void openFavorites(WebDriver webDriver) {
+        initialization(webDriver);
         mainPage.open();
         mainPage.openFavorites();
     }
 
-    @Test
-    void openMulticart() {
+    @ParameterizedTest
+    @MethodSource("browserProvider")
+    void openMulticart(WebDriver webDriver) {
+        initialization(webDriver);
         mainPage.open();
         mainPage.openMulticart();
     }
 
-    @Test
-    void addAdressViaMap() {
+    @ParameterizedTest
+    @MethodSource("browserProvider")
+    void addAdressViaMap(WebDriver webDriver) {
+        initialization(webDriver);
         mainPage.open();
         mainPage.openAddress();
         mainPage.clickOnMap();
         mainPage.addAdress();
     }
 
-    @Test
-    void addAdressViaInput() {
+    @ParameterizedTest
+    @MethodSource("browserProvider")
+    void addAdressViaInput(WebDriver webDriver) {
+        initialization(webDriver);
         mainPage.open();
         mainPage.openAddress();
         mainPage.enterAddress("Санкт-Петербург, Вяземский переулок, 5-7");
         mainPage.addAdress();
     }
 
-    @Test
-    void addProductToCart() {
+    @ParameterizedTest
+    @MethodSource("browserProvider")
+    void addProductToCart(WebDriver webDriver) {
+        initialization(webDriver);
         mainPage.open();
         mainPage.scrollDown();
         mainPage.addProductToCart();

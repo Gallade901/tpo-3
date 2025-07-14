@@ -1,5 +1,6 @@
 package main.pages;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,33 +16,20 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MulticartPageTest {
+public class CatalogPageTest {
 
-    private MulticartPage multicartPage;
+    private CatalogPage catalogPage;
     private WebDriver driver;
-    private MainPage mainPage;
 
 //    @BeforeEach
     public void initialization(WebDriver webDriver) {
-//        driver = new ChromeDriver();
         driver = webDriver;
+//        driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.manage().deleteAllCookies();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(52));
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(52));
-        multicartPage = new MulticartPage(driver, wait);
-        mainPage = new MainPage(driver, wait);
-        mainPage.open();
-        mainPage.scrollDown();
-        mainPage.addProductToCart();
-        if (mainPage.mustChooseShop()) {
-            if (mainPage.emptyShopList()) {
-                mainPage.clickOnInputShop();
-            }
-            mainPage.chooseShop();
-        }
-        assertTrue(mainPage.checkProductInCart());
-
+        catalogPage = new CatalogPage(driver, wait);
     }
 
     static Stream<Arguments> browserProvider() {
@@ -51,23 +39,36 @@ public class MulticartPageTest {
         );
     }
 
-
     @ParameterizedTest
     @MethodSource("browserProvider")
-    public void testDeleteProduct(WebDriver webDriver) {  // FIreFox проблема сайта
+    public void buyFlower(WebDriver webDriver) {
         initialization(webDriver);
-        multicartPage.open();
-        multicartPage.deleteProduct();
-        assertTrue(multicartPage.checkEmptyCart());
+        catalogPage.open();
+        catalogPage.checkCategories();
+        catalogPage.clickCountryHouse();
+        catalogPage.clickFlowers();
+        catalogPage.addFlowers();
+        assertTrue(catalogPage.checkProductInCart());
     }
 
     @ParameterizedTest
     @MethodSource("browserProvider")
-    public void placeAnOrder(WebDriver webDriver) {
+    public void checkFilters(WebDriver webDriver) {
         initialization(webDriver);
-        multicartPage.open();
-        multicartPage.clickPlaceAnOrder();
-        assertTrue(multicartPage.checkInvitationLogin());
+        catalogPage.open();
+        catalogPage.checkCategories();
+        catalogPage.clickCountryHouse();
+        catalogPage.clickFlowers();
+        catalogPage.clickHighRating();
+        catalogPage.scrollDown();
+        assertTrue(catalogPage.checkSeller());
+        assertTrue(catalogPage.checkMinPrice(3000));
     }
 
-}   
+    @AfterEach
+    void teardown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}

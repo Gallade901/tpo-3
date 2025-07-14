@@ -92,13 +92,7 @@ public class MainPage extends Page {
         }
     }
 
-    public boolean checkProductInCart() {
-        try {
-            return driver.findElement(By.xpath("//span[@class='multicart-tab__goods-count']")).isDisplayed();
-        } catch (NoSuchElementException e) {
-            return false;
-        }
-    }
+
 
 
 }
